@@ -1,0 +1,98 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package vistas.swing.panels;
+
+import cinema.controller.UsuarioController;
+import cinema.model.Usuario;
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import vistas.swing.dialogs.UsuarioDialog;
+import vistas.swing.tables.UsuarioTableModel;
+
+public class UsuarioPanel extends JPanel {
+    private UsuarioController controller;
+    private JTable table;
+    private UsuarioTableModel tableModel;
+    
+    public UsuarioPanel() {
+        this.controller = new UsuarioController();
+        initialize();
+        loadUsuarios();
+    }
+    
+    private void initialize() {
+        setLayout(new BorderLayout());
+        
+        // Panel de botones
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        JButton btnAgregar = new JButton("Agregar Usuario");
+        JButton btnEditar = new JButton("Editar");
+        JButton btnEliminar = new JButton("Eliminar");
+        JButton btnActualizar = new JButton("Actualizar");
+        
+        btnAgregar.addActionListener(e -> agregarUsuario());
+        btnEditar.addActionListener(e -> editarUsuario());
+        btnEliminar.addActionListener(e -> eliminarUsuario());
+        btnActualizar.addActionListener(e -> loadUsuarios());
+        
+        buttonPanel.add(btnAgregar);
+        buttonPanel.add(btnEditar);
+        buttonPanel.add(btnEliminar);
+        buttonPanel.add(btnActualizar);
+        
+        // Tabla
+        table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        
+        add(buttonPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private void loadUsuarios() {
+        List<Usuario> usuarios = controller.obtenerTodosUsuarios();
+        tableModel = new UsuarioTableModel(usuarios);
+        table.setModel(tableModel);
+    }
+    
+    private void agregarUsuario() {
+        UsuarioDialog dialog = new UsuarioDialog((Frame) SwingUtilities.getWindowAncestor(this), controller);
+        dialog.setVisible(true);
+        loadUsuarios();
+    }
+    
+    private void editarUsuario() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario para editar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        Usuario usuario = tableModel.getUsuarioAt(selectedRow);
+        UsuarioDialog dialog = new UsuarioDialog((Frame) SwingUtilities.getWindowAncestor(this), controller, usuario);
+        dialog.setVisible(true);
+        loadUsuarios();
+    }
+    
+    private void eliminarUsuario() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un usuario para eliminar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        Usuario usuario = tableModel.getUsuarioAt(selectedRow);
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "¿Está seguro de eliminar al usuario: " + usuario.getNombre() + "?",
+            "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Implementar eliminación en el controller
+            JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente");
+            loadUsuarios();
+        }
+    }
+}
