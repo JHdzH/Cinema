@@ -15,15 +15,58 @@ public class UsuarioDAO {
     public boolean insertarUsuario(Usuario usuario) {
         String sql = "INSERT INTO usuarios (nombre, correo) VALUES (?, ?)";
 
-        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, usuario.getNombre());
             stmt.setString(2, usuario.getCorreo());
 
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        usuario.setId(generatedKeys.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
+
+        } catch (SQLException e) {
+            System.err.println("Error insertando usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // MÉTODO NUEVO: Actualizar usuario
+    public boolean actualizarUsuario(Usuario usuario) {
+        String sql = "UPDATE usuarios SET nombre = ?, correo = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, usuario.getNombre());
+            stmt.setString(2, usuario.getCorreo());
+            stmt.setInt(3, usuario.getId());
+
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error actualizando usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // MÉTODO NUEVO: Eliminar usuario
+    public boolean eliminarUsuario(int id) {
+        String sql = "DELETE FROM usuarios WHERE id = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error eliminando usuario: " + e.getMessage());
             return false;
         }
     }
@@ -44,7 +87,7 @@ public class UsuarioDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error obteniendo usuarios: " + e.getMessage());
         }
 
         return usuarios;
@@ -67,42 +110,9 @@ public class UsuarioDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error obteniendo usuario: " + e.getMessage());
         }
 
         return usuario;
-    }
-
-    public boolean actualizarUsuario(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nombre = ?, correo = ? WHERE id = ?";
-
-        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, usuario.getNombre());
-            stmt.setString(2, usuario.getCorreo());
-            stmt.setInt(3, usuario.getId());
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error actualizando usuario: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean eliminarUsuario(int id) {
-        String sql = "DELETE FROM usuarios WHERE id = ?";
-
-        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error eliminando usuario: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
     }
 }

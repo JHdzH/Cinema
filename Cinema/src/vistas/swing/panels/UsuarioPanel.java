@@ -59,6 +59,20 @@ public class UsuarioPanel extends JPanel {
         table.setModel(tableModel);
     }
 
+    private void cargarUsuarios() {
+        List<Usuario> usuarios = controller.obtenerTodosUsuarios();
+        if (tableModel == null) {
+            tableModel = new UsuarioTableModel(usuarios);
+            table.setModel(tableModel);
+        } else {
+            tableModel.actualizarDatos(usuarios); // Esto llama a fireTableDataChanged()
+        }
+
+        // Forzar actualización visual de la tabla :cite[2]:cite[5]
+        table.revalidate();
+        table.repaint();
+    }
+
     private void agregarUsuario() {
         UsuarioDialog dialog = new UsuarioDialog((Frame) SwingUtilities.getWindowAncestor(this), controller);
         dialog.setVisible(true);

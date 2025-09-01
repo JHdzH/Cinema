@@ -29,14 +29,7 @@ public class UsuarioService {
         return usuarioDAO.insertarUsuario(usuario);
     }
 
-    public List<Usuario> obtenerTodosUsuarios() {
-        return usuarioDAO.obtenerTodosUsuarios();
-    }
-
-    public Usuario obtenerUsuarioPorId(int id) {
-        return usuarioDAO.obtenerUsuarioPorId(id);
-    }
-
+    // MÉTODO NUEVO: Actualizar usuario
     public boolean actualizarUsuario(Usuario usuario) {
         if (usuario == null || usuario.getId() <= 0) {
             throw new IllegalArgumentException("Usuario inválido para actualización");
@@ -53,18 +46,19 @@ public class UsuarioService {
         return usuarioDAO.actualizarUsuario(usuario);
     }
 
+    // MÉTODO NUEVO: Eliminar usuario
     public boolean eliminarUsuario(int id) {
         if (id <= 0) {
             throw new IllegalArgumentException("ID de usuario inválido");
         }
-
-        // Opcional: Verificar que el usuario existe antes de eliminar
-        Usuario usuario = usuarioDAO.obtenerUsuarioPorId(id);
-        if (usuario == null) {
-            throw new IllegalArgumentException("Usuario no encontrado");
-        }
-
         return usuarioDAO.eliminarUsuario(id);
     }
 
+    public List<Usuario> obtenerTodosUsuarios() {
+        return usuarioDAO.obtenerTodosUsuarios();
+    }
+
+    public Usuario obtenerUsuarioPorId(int id) {
+        return usuarioDAO.obtenerUsuarioPorId(id);
+    }
 }

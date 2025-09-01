@@ -25,14 +25,7 @@ public class UsuarioController {
         }
     }
 
-    public List<Usuario> obtenerTodosUsuarios() {
-        return usuarioService.obtenerTodosUsuarios();
-    }
-
-    public Usuario obtenerUsuario(int id) {
-        return usuarioService.obtenerUsuarioPorId(id);
-    }
-
+    // MÉTODO NUEVO: Actualizar usuario
     public boolean actualizarUsuario(Usuario usuario) {
         try {
             return usuarioService.actualizarUsuario(usuario);
@@ -42,17 +35,21 @@ public class UsuarioController {
         }
     }
 
+    // MÉTODO NUEVO: Eliminar usuario
     public boolean eliminarUsuario(int id) {
         try {
             return usuarioService.eliminarUsuario(id);
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
-            // Mostrar mensaje en UI si es necesario
-            return false;
-        } catch (Exception e) {
-            System.out.println("Error inesperado eliminando usuario: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Usuario> obtenerTodosUsuarios() {
+        return usuarioService.obtenerTodosUsuarios();
+    }
+
+    public Usuario obtenerUsuario(int id) {
+        return usuarioService.obtenerUsuarioPorId(id);
     }
 }
