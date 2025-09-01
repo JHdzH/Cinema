@@ -60,32 +60,38 @@ public class UsuarioDialog extends JDialog {
     }
     
     private void guardarUsuario() {
-        String nombre = txtNombre.getText().trim();
-        String correo = txtCorreo.getText().trim();
-        
-        if (nombre.isEmpty() || correo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            if (usuario == null) {
-                // Nuevo usuario
-                boolean success = controller.registrarUsuario(nombre, correo);
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente");
-                    dispose();
-                }
+    String nombre = txtNombre.getText().trim();
+    String correo = txtCorreo.getText().trim();
+    
+    if (nombre.isEmpty() || correo.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    try {
+        if (usuario == null) {
+            // Nuevo usuario
+            boolean success = controller.registrarUsuario(nombre, correo);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente");
+                dispose();
             } else {
-                // Editar usuario existente
-                usuario.setNombre(nombre);
-                usuario.setCorreo(correo);
-                // Implementar actualización en controller
+                JOptionPane.showMessageDialog(this, "Error al registrar usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // Editar usuario existente
+            usuario.setNombre(nombre);
+            usuario.setCorreo(correo);
+            boolean success = controller.actualizarUsuario(usuario);
+            if (success) {
                 JOptionPane.showMessageDialog(this, "Usuario actualizado exitosamente");
                 dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar usuario", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 }
