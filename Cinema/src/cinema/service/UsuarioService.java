@@ -46,12 +46,22 @@ public class UsuarioService {
         return usuarioDAO.actualizarUsuario(usuario);
     }
 
-    // MÉTODO NUEVO: Eliminar usuario
     public boolean eliminarUsuario(int id) {
+        System.out.println("Service: Eliminando usuario ID: " + id);
         if (id <= 0) {
             throw new IllegalArgumentException("ID de usuario inválido");
         }
-        return usuarioDAO.eliminarUsuario(id);
+
+        // Verificar que el usuario existe primero
+        Usuario usuario = usuarioDAO.obtenerUsuarioPorId(id);
+        if (usuario == null) {
+            System.out.println("Service: Usuario no encontrado");
+            return false;
+        }
+
+        boolean result = usuarioDAO.eliminarUsuario(id);
+        System.out.println("Service: Resultado DAO: " + result);
+        return result;
     }
 
     public List<Usuario> obtenerTodosUsuarios() {

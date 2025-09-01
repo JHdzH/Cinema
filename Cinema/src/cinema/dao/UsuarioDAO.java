@@ -56,18 +56,35 @@ public class UsuarioDAO {
         }
     }
 
-    // MÉTODO NUEVO: Eliminar usuario
     public boolean eliminarUsuario(int id) {
+        // Primero eliminar todas las favoritas asociadas a este usuario
+        eliminarFavoritasUsuario(id);
+
+        // Luego eliminar el usuario
         String sql = "DELETE FROM usuarios WHERE id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+            int filasAfectadas = stmt.executeUpdate();
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             System.err.println("Error eliminando usuario: " + e.getMessage());
             return false;
+        }
+    }
+
+    private void eliminarFavoritasUsuario(int idUsuario) {
+        String sql = "DELETE FROM favoritas WHERE idUsuario = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUsuario);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error eliminando favoritas del usuario: " + e.getMessage());
         }
     }
 

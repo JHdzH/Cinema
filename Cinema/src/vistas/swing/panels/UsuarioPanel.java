@@ -64,15 +64,20 @@ public class UsuarioPanel extends JPanel {
     }
 
     private void cargarUsuarios() {
+        System.out.println("Cargando usuarios...");
         List<Usuario> usuarios = controller.obtenerTodosUsuarios();
+        System.out.println("Usuarios obtenidos: " + usuarios.size());
 
         if (tableModel == null) {
             tableModel = new UsuarioTableModel(usuarios);
             table.setModel(tableModel);
         } else {
-            // ✅ Usar el nuevo método setUsuarios que incluye fireTableDataChanged()
-            tableModel.setUsuarios(usuarios);
+            
+            tableModel.actualizarDatos(usuarios);
         }
+
+        // Forzar actualización visual
+        table.repaint();
     }
 
     private void agregarUsuario() {
@@ -104,18 +109,20 @@ public class UsuarioPanel extends JPanel {
         }
 
         Usuario usuario = tableModel.getUsuarioAt(selectedRow);
+        System.out.println("Panel: Usuario seleccionado para eliminar: " + usuario.getId());
+
         int confirm = JOptionPane.showConfirmDialog(this,
                 "¿Está seguro de eliminar al usuario: " + usuario.getNombre() + "?",
                 "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
             boolean success = controller.eliminarUsuario(usuario.getId());
+            System.out.println("Panel: Resultado eliminación: " + success);
+
             if (success) {
                 JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente");
-
-                // ✅ CORRECCIÓN: Actualizar la tabla correctamente
-                tableModel.removeRow(selectedRow); // Eliminar la fila del modelo
-
+                // ✅ ACTUALIZACIÓN CORRECTA - Recargar todos los datos
+                cargarUsuarios(); // Esto debe llamar a tableModel.actualizarDatos()
             } else {
                 JOptionPane.showMessageDialog(this, "Error al eliminar usuario", "Error", JOptionPane.ERROR_MESSAGE);
             }

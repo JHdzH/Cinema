@@ -35,12 +35,14 @@ public class UsuarioController {
         }
     }
 
-    // MÉTODO NUEVO: Eliminar usuario
     public boolean eliminarUsuario(int id) {
+        System.out.println("Controller: Eliminando usuario ID: " + id);
         try {
-            return usuarioService.eliminarUsuario(id);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
+            boolean result = usuarioService.eliminarUsuario(id);
+            System.out.println("Controller: Resultado eliminación: " + result);
+            return result;
+        } catch (Exception e) {
+            System.out.println("Controller: Error: " + e.getMessage());
             return false;
         }
     }
