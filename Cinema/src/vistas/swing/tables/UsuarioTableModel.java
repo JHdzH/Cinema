@@ -46,6 +46,19 @@ public class UsuarioTableModel extends AbstractTableModel {
         return usuarios.get(row);
     }
     
+    public void removeRow(int row) {
+        if (row >= 0 && row < usuarios.size()) {
+            usuarios.remove(row);
+            fireTableRowsDeleted(row, row); // ✅ Notificar a la tabla
+        }
+    }
+    
+    // Método para actualizar todos los datos
+    public void setUsuarios(List<Usuario> nuevosUsuarios) {
+        this.usuarios = nuevosUsuarios;
+        fireTableDataChanged(); // ✅ Notificar cambio completo
+    }
+    
     // MÉTODO CRÍTICO: Actualizar datos y notificar a la tabla
     public void actualizarDatos(List<Usuario> nuevosUsuarios) {
         this.usuarios = nuevosUsuarios;

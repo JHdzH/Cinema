@@ -34,6 +34,10 @@ public class UsuarioPanel extends JPanel {
         JButton btnEditar = new JButton("Editar");
         JButton btnEliminar = new JButton("Eliminar");
         JButton btnActualizar = new JButton("Actualizar");
+        btnActualizar.addActionListener(e -> {
+            cargarUsuarios(); // Recargar datos desde la BD
+            JOptionPane.showMessageDialog(this, "Datos actualizados", "Información", JOptionPane.INFORMATION_MESSAGE);
+        });
 
         btnAgregar.addActionListener(e -> agregarUsuario());
         btnEditar.addActionListener(e -> editarUsuario());
@@ -61,16 +65,14 @@ public class UsuarioPanel extends JPanel {
 
     private void cargarUsuarios() {
         List<Usuario> usuarios = controller.obtenerTodosUsuarios();
+
         if (tableModel == null) {
             tableModel = new UsuarioTableModel(usuarios);
             table.setModel(tableModel);
         } else {
-            tableModel.actualizarDatos(usuarios); // Esto llama a fireTableDataChanged()
+            // ✅ Usar el nuevo método setUsuarios que incluye fireTableDataChanged()
+            tableModel.setUsuarios(usuarios);
         }
-
-        // Forzar actualización visual de la tabla :cite[2]:cite[5]
-        table.revalidate();
-        table.repaint();
     }
 
     private void agregarUsuario() {
@@ -110,7 +112,10 @@ public class UsuarioPanel extends JPanel {
             boolean success = controller.eliminarUsuario(usuario.getId());
             if (success) {
                 JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente");
-                cargarUsuarios(); // Actualizar tabla después de eliminar
+
+                // ✅ CORRECCIÓN: Actualizar la tabla correctamente
+                tableModel.removeRow(selectedRow); // Eliminar la fila del modelo
+
             } else {
                 JOptionPane.showMessageDialog(this, "Error al eliminar usuario", "Error", JOptionPane.ERROR_MESSAGE);
             }
