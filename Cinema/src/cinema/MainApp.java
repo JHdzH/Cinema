@@ -8,6 +8,7 @@ import cinema.config.DatabaseConfig;
 import cinema.controller.FavoritaController;
 import cinema.controller.PeliculaController;
 import cinema.controller.UsuarioController;
+import cinema.model.Favorita;
 import cinema.model.Pelicula;
 import cinema.model.Usuario;
 import java.sql.Connection;
@@ -75,29 +76,54 @@ public class MainApp {
     private static void probarFavoritaController() {
         System.out.println("\n--- Probando FavoritaController ---");
         FavoritaController favoritaController = new FavoritaController();
+        UsuarioController usuarioController = new UsuarioController();
+        PeliculaController peliculaController = new PeliculaController();
         
-        // Suponiendo que tenemos usuario ID 1 y película ID 1
-        int usuarioId = 1;
-        int peliculaId = 1;
+        // Obtener usuario y película de prueba
+        List<Usuario> usuarios = usuarioController.obtenerTodosUsuarios();
+        List<Pelicula> peliculas = peliculaController.obtenerTodasPeliculas();
         
-        // Agregar a favoritos
-        boolean agregada = favoritaController.agregarFavorita(peliculaId, usuarioId);
+        if (usuarios.isEmpty() || peliculas.isEmpty()) {
+            System.out.println("Necesita tener usuarios y películas primero");
+            return;
+        }
+        
+        Usuario usuario = usuarios.get(0);
+        Pelicula pelicula = peliculas.get(0);
+        
+        System.out.println("Usuario de prueba: " + usuario.getNombre());
+        System.out.println("Película de prueba: " + pelicula.getTitulo());
+        
+        // Agregar a favoritos usando objetos
+        boolean agregada = favoritaController.agregarFavorita(pelicula, usuario);
         System.out.println("Película agregada a favoritos: " + agregada);
         
         // Verificar si es favorita
-        boolean esFavorita = favoritaController.esFavorita(peliculaId, usuarioId);
+        boolean esFavorita = favoritaController.esFavorita(pelicula, usuario);
         System.out.println("¿Es favorita? " + esFavorita);
         
         // Obtener películas favoritas del usuario
-        List<Pelicula> favoritas = favoritaController.obtenerFavoritasPorUsuario(usuarioId);
-        System.out.println("Películas favoritas del usuario " + usuarioId + ": " + favoritas.size());
-        for (Pelicula pelicula : favoritas) {
-            System.out.println(" - " + pelicula.getTitulo());
+        List<Pelicula> favoritas = favoritaController.obtenerPeliculasFavoritas(usuario);
+        System.out.println("Películas favoritas del usuario " + usuario.getNombre() + ": " + favoritas.size());
+        for (Pelicula fav : favoritas) {
+            System.out.println(" - " + fav.getTitulo());
+        }
+        
+        // Obtener favoritas completas (con información de usuario y película)
+        List<Favorita> favoritasCompletas = favoritaController.obtenerFavoritasCompletasPorUsuario(usuario);
+        System.out.println("Favoritas completas: " + favoritasCompletas.size());
+        for (Favorita favorita : favoritasCompletas) {
+            System.out.println(" - Usuario: " + favorita.getUsuario().getNombre() + 
+                             ", Película: " + favorita.getPelicula().getTitulo());
         }
         
         // Eliminar de favoritos
-        boolean eliminada = favoritaController.eliminarFavorita(peliculaId, usuarioId);
+        boolean eliminada = favoritaController.eliminarFavorita(pelicula, usuario);
         System.out.println("Película eliminada de favoritos: " + eliminada);
+        
+        // Verificar después de eliminar
+        esFavorita = favoritaController.esFavorita(pelicula, usuario);
+        System.out.println("¿Sigue siendo favorita después de eliminar? " + esFavorita);
     }
 }
 //=============================================================================

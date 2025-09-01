@@ -4,7 +4,9 @@
  */
 package cinema.controller;
 
+import cinema.model.Favorita;
 import cinema.model.Pelicula;
+import cinema.model.Usuario;
 import cinema.service.FavoritaService;
 import java.util.List;
 
@@ -15,41 +17,87 @@ public class FavoritaController {
         this.favoritaService = new FavoritaService();
     }
     
-    public boolean agregarFavorita(int idPelicula, int idUsuario) {
-        // Validaciones
-        if (idPelicula <= 0 || idUsuario <= 0) {
-            System.out.println("Error: IDs deben ser mayores a 0");
+    public boolean agregarFavorita(Favorita favorita) {
+        try {
+            return favoritaService.agregarFavorita(favorita);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
             return false;
         }
-        
-        // Verificar si ya es favorita
-        if (favoritaService.esPeliculaFavorita(idPelicula, idUsuario)) {
-            System.out.println("La película ya está en favoritos");
+    }
+    
+    public boolean agregarFavorita(Pelicula pelicula, Usuario usuario) {
+        try {
+            return favoritaService.agregarFavorita(pelicula, usuario);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
             return false;
         }
-        
-        return favoritaService.agregarPeliculaFavorita(idPelicula, idUsuario);
     }
     
-    public boolean eliminarFavorita(int idPelicula, int idUsuario) {
-        if (idPelicula <= 0 || idUsuario <= 0) {
-            System.out.println("Error: IDs deben ser mayores a 0");
+    public boolean eliminarFavorita(Favorita favorita) {
+        try {
+            return favoritaService.eliminarFavorita(favorita);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
             return false;
         }
-        
-        return favoritaService.eliminarPeliculaFavorita(idPelicula, idUsuario);
     }
     
-    public List<Pelicula> obtenerFavoritasPorUsuario(int idUsuario) {
-        if (idUsuario <= 0) {
-            System.out.println("Error: ID de usuario debe ser mayor a 0");
-            return List.of(); // Lista vacía
+    public boolean eliminarFavorita(Pelicula pelicula, Usuario usuario) {
+        try {
+            return favoritaService.eliminarFavorita(pelicula, usuario);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
+            return false;
         }
-        
-        return favoritaService.obtenerPeliculasFavoritas(idUsuario);
     }
     
-    public boolean esFavorita(int idPelicula, int idUsuario) {
-        return favoritaService.esPeliculaFavorita(idPelicula, idUsuario);
+    public List<Favorita> obtenerFavoritasCompletasPorUsuario(Usuario usuario) {
+        try {
+            return favoritaService.obtenerFavoritasCompletasPorUsuario(usuario);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
+            return List.of();
+        }
     }
-}
+    
+    public List<Pelicula> obtenerPeliculasFavoritas(Usuario usuario) {
+        try {
+            return favoritaService.obtenerPeliculasFavoritas(usuario);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
+            return List.of();
+        }
+    }
+    
+    public boolean esFavorita(Pelicula pelicula, Usuario usuario) {
+        try {
+            return favoritaService.esFavorita(pelicula, usuario);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error inesperado: " + e.getMessage());
+            return false;
+        }
+    }
+}   

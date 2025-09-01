@@ -7,6 +7,7 @@ package cinema.dao;
 import cinema.config.DatabaseConfig;
 import cinema.model.Favorita;
 import cinema.model.Pelicula;
+import cinema.model.Usuario;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,8 @@ public class FavoritaDAO {
     public boolean agregarFavorita(Favorita favorita) {
         String sql = "INSERT INTO favoritas (idPelicula, idUsuario) VALUES (?, ?)";
         
-        try (
-            Connection conn = DatabaseConfig.getConnection();
-            PreparedStatement pStmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(sql)) {
             
             pStmt.setInt(1, favorita.getIdPelicula());
             pStmt.setInt(2, favorita.getIdUsuario());
@@ -31,15 +31,14 @@ public class FavoritaDAO {
         }
     }
     
-    public boolean eliminarFavorita(int idPelicula, int idUsuario) {
+    public boolean eliminarFavorita(Favorita favorita) {
         String sql = "DELETE FROM favoritas WHERE idPelicula = ? AND idUsuario = ?";
         
-        try (
-            Connection conn = DatabaseConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setInt(1, idPelicula);
-            stmt.setInt(2, idUsuario);
+            stmt.setInt(1, favorita.getIdPelicula());
+            stmt.setInt(2, favorita.getIdUsuario());
             
             return stmt.executeUpdate() > 0;
             
@@ -49,15 +48,56 @@ public class FavoritaDAO {
         }
     }
     
+    public List<Favorita> obtenerFavoritasPorUsuario(int idUsuario) {
+        List<Favorita> favoritas = new ArrayList<>();
+        String sql = "SELECT f.*, p.*, u.* FROM favoritas f " +
+                    "INNER JOIN peliculas p ON f.idPelicula = p.idPelicula " +
+                    "INNER JOIN usuarios u ON f.idUsuario = u.id " +
+                    "WHERE f.idUsuario = ?";
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idUsuario);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                // Crear objeto Pelicula
+                Pelicula pelicula = new Pelicula();
+                pelicula.setIdPelicula(rs.getInt("idPelicula"));
+                pelicula.setTitulo(rs.getString("titulo"));
+                pelicula.setGenero(rs.getString("genero"));
+                pelicula.setDuracion(rs.getString("duracion"));
+                
+                // Crear objeto Usuario
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setCorreo(rs.getString("correo"));
+                
+                // Crear objeto Favorita con objetos completos
+                Favorita favorita = new Favorita();
+                favorita.setPelicula(pelicula);
+                favorita.setUsuario(usuario);
+                
+                favoritas.add(favorita);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error obteniendo favoritas: " + e.getMessage());
+        }
+        
+        return favoritas;
+    }
+    
     public List<Pelicula> obtenerPeliculasFavoritas(int idUsuario) {
         List<Pelicula> peliculas = new ArrayList<>();
-        String sql =    "SELECT p.* FROM peliculas p " +
-                        "INNER JOIN favoritas f ON p.idPelicula = f.idPelicula " +
-                        "WHERE f.idUsuario = ?";
+        String sql = "SELECT p.* FROM peliculas p " +
+                    "INNER JOIN favoritas f ON p.idPelicula = f.idPelicula " +
+                    "WHERE f.idUsuario = ?";
         
-        try (
-            Connection conn = DatabaseConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, idUsuario);
             ResultSet rs = stmt.executeQuery();
@@ -79,15 +119,14 @@ public class FavoritaDAO {
         return peliculas;
     }
     
-    public boolean esFavorita(int idPelicula, int idUsuario) {
+    public boolean esFavorita(Favorita favorita) {
         String sql = "SELECT COUNT(*) FROM favoritas WHERE idPelicula = ? AND idUsuario = ?";
         
-        try (
-            Connection conn = DatabaseConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setInt(1, idPelicula);
-            stmt.setInt(2, idUsuario);
+            stmt.setInt(1, favorita.getIdPelicula());
+            stmt.setInt(2, favorita.getIdUsuario());
             
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

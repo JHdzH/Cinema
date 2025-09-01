@@ -7,6 +7,7 @@ package cinema.service;
 import cinema.dao.FavoritaDAO;
 import cinema.model.Favorita;
 import cinema.model.Pelicula;
+import cinema.model.Usuario;
 import java.util.List;
 
 public class FavoritaService {
@@ -16,20 +17,56 @@ public class FavoritaService {
         this.favoritaDAO = new FavoritaDAO();
     }
     
-    public boolean agregarPeliculaFavorita(int idPelicula, int idUsuario) {
-        Favorita favorita = new Favorita(idPelicula, idUsuario);
+    public boolean agregarFavorita(Favorita favorita) {
+        if (favorita.getPelicula() == null || favorita.getUsuario() == null) {
+            throw new IllegalArgumentException("Película y Usuario deben ser objetos válidos");
+        }
+        
+        if (esFavorita(favorita)) {
+            throw new IllegalArgumentException("La película ya está en favoritos");
+        }
+        
         return favoritaDAO.agregarFavorita(favorita);
     }
     
-    public boolean eliminarPeliculaFavorita(int idPelicula, int idUsuario) {
-        return favoritaDAO.eliminarFavorita(idPelicula, idUsuario);
+    public boolean agregarFavorita(Pelicula pelicula, Usuario usuario) {
+        Favorita favorita = new Favorita(pelicula, usuario);
+        return agregarFavorita(favorita);
     }
     
-    public List<Pelicula> obtenerPeliculasFavoritas(int idUsuario) {
-        return favoritaDAO.obtenerPeliculasFavoritas(idUsuario);
+    public boolean eliminarFavorita(Favorita favorita) {
+        if (favorita.getPelicula() == null || favorita.getUsuario() == null) {
+            throw new IllegalArgumentException("Película y Usuario deben ser objetos válidos");
+        }
+        
+        return favoritaDAO.eliminarFavorita(favorita);
     }
     
-    public boolean esPeliculaFavorita(int idPelicula, int idUsuario) {
-        return favoritaDAO.esFavorita(idPelicula, idUsuario);
+    public boolean eliminarFavorita(Pelicula pelicula, Usuario usuario) {
+        Favorita favorita = new Favorita(pelicula, usuario);
+        return eliminarFavorita(favorita);
+    }
+    
+    public List<Favorita> obtenerFavoritasCompletasPorUsuario(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no puede ser nulo");
+        }
+        return favoritaDAO.obtenerFavoritasPorUsuario(usuario.getId());
+    }
+    
+    public List<Pelicula> obtenerPeliculasFavoritas(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no puede ser nulo");
+        }
+        return favoritaDAO.obtenerPeliculasFavoritas(usuario.getId());
+    }
+    
+    public boolean esFavorita(Favorita favorita) {
+        return favoritaDAO.esFavorita(favorita);
+    }
+    
+    public boolean esFavorita(Pelicula pelicula, Usuario usuario) {
+        Favorita favorita = new Favorita(pelicula, usuario);
+        return esFavorita(favorita);
     }
 }

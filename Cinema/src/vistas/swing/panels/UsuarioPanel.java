@@ -6,11 +6,11 @@ package vistas.swing.panels;
 
 import cinema.controller.UsuarioController;
 import cinema.model.Usuario;
+import vistas.swing.tables.UsuarioTableModel;
+import vistas.swing.dialogs.UsuarioDialog;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import vistas.swing.dialogs.UsuarioDialog;
-import vistas.swing.tables.UsuarioTableModel;
 
 public class UsuarioPanel extends JPanel {
     private UsuarioController controller;
@@ -61,6 +61,7 @@ public class UsuarioPanel extends JPanel {
     private void agregarUsuario() {
         UsuarioDialog dialog = new UsuarioDialog((Frame) SwingUtilities.getWindowAncestor(this), controller);
         dialog.setVisible(true);
+        // Actualizar la tabla después de agregar
         loadUsuarios();
     }
     
@@ -74,6 +75,7 @@ public class UsuarioPanel extends JPanel {
         Usuario usuario = tableModel.getUsuarioAt(selectedRow);
         UsuarioDialog dialog = new UsuarioDialog((Frame) SwingUtilities.getWindowAncestor(this), controller, usuario);
         dialog.setVisible(true);
+        // Actualizar la tabla después de editar
         loadUsuarios();
     }
     
@@ -90,9 +92,16 @@ public class UsuarioPanel extends JPanel {
             "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {
-            // Implementar eliminación en el controller
-            JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente");
-            loadUsuarios();
+            // Aquí debes implementar la eliminación en el controller
+            // Por ahora, solo mostramos un mensaje y actualizamos la tabla
+            boolean success = true; // Cambiar por la llamada real al controller
+            
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente");
+                loadUsuarios(); // Actualizar tabla después de eliminar
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

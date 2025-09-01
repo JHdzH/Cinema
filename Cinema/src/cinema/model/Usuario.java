@@ -27,8 +27,9 @@ public class Usuario {
     public String getCorreo() { return correo; }
     public void setCorreo(String correo) { this.correo = correo; }
     
+    // Sobrescribir toString() para mostrar mejor en JComboBox
     @Override
     public String toString() {
-        return "Usuario{id=" + id + ", nombre='" + nombre + "', correo='" + correo + "'}";
+        return nombre + " (" + correo + ")";
     }
 }
