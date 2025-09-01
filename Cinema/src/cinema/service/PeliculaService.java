@@ -9,36 +9,59 @@ import cinema.model.Pelicula;
 import java.util.List;
 
 public class PeliculaService {
+
     private PeliculaDAO peliculaDAO;
-    
+
     public PeliculaService() {
         this.peliculaDAO = new PeliculaDAO();
     }
-    
+
     public boolean agregarPelicula(String titulo, String genero, String duracion) {
         if (titulo == null || titulo.trim().isEmpty()) {
             throw new IllegalArgumentException("El título no puede estar vacío");
         }
-        
+
         Pelicula pelicula = new Pelicula(titulo, genero, duracion);
         return peliculaDAO.insertarPelicula(pelicula);
     }
-    
+
     public List<Pelicula> obtenerTodasPeliculas() {
         return peliculaDAO.obtenerTodasPeliculas();
     }
-    
+
     public Pelicula obtenerPeliculaPorId(int idPelicula) {
         return peliculaDAO.obtenerPeliculaPorId(idPelicula);
     }
-    
+
     public boolean actualizarPelicula(int idPelicula, String titulo, String genero, String duracion) {
         Pelicula pelicula = new Pelicula(titulo, genero, duracion);
         pelicula.setIdPelicula(idPelicula);
         return peliculaDAO.actualizarPelicula(pelicula);
     }
-    
+
     public boolean eliminarPelicula(int idPelicula) {
         return peliculaDAO.eliminarPelicula(idPelicula);
     }
+
+    public boolean actualizarPelicula(Pelicula pelicula) {
+        System.out.println("Service: Actualizando película: " + pelicula.getTitulo());
+        if (pelicula == null || pelicula.getIdPelicula() <= 0) {
+            throw new IllegalArgumentException("Película inválida para actualización");
+        }
+
+        if (pelicula.getTitulo() == null || pelicula.getTitulo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El título no puede estar vacío");
+        }
+
+        if (pelicula.getGenero() == null || pelicula.getGenero().trim().isEmpty()) {
+            throw new IllegalArgumentException("El género no puede estar vacío");
+        }
+
+        if (pelicula.getDuracion() == null || pelicula.getDuracion().trim().isEmpty()) {
+            throw new IllegalArgumentException("La duración no puede estar vacía");
+        }
+
+        return peliculaDAO.actualizarPelicula(pelicula);
+    }
+
 }

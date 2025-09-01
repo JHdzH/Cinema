@@ -51,4 +51,12 @@ public class PeliculaTableModel extends AbstractTableModel {
         this.peliculas = peliculas;
         fireTableDataChanged();
     }
+    
+    
+   public void actualizarDatos(List<Pelicula> nuevasPeliculas) {
+    System.out.println("DEBUG: Actualizando TableModel con " + nuevasPeliculas.size() + " películas");
+    this.peliculas = nuevasPeliculas;
+    fireTableDataChanged(); 
+    System.out.println("DEBUG: TableModel notificó cambios a la JTable");
+}   
 }
